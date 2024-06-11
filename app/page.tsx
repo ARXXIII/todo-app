@@ -1,113 +1,184 @@
-import Image from "next/image";
+'use client'
+
+import Confetti from "react-confetti";
+import { Task } from "@/components/task";
+import { useWindowSize } from "react-use";
+import { useEffect, useState } from "react";
+import { ErrorModal } from "@/components/modals/error";
+
+interface Provider {
+  task: string,
+  status: "uncompleted" | "completed",
+}
 
 export default function Home() {
+  const { width, height } = useWindowSize()
+
+  const [value, setValue] = useState('')
+  const [todoList, setTodoList] = useState<Array<Provider>>([])
+  const [confetti, setConfetti] = useState(false)
+  const [modalError, setModalError] = useState(false)
+
+  const getTasks = (option: 'all' | 'uncompleted' | 'completed') => {
+    const tasks = JSON.parse(localStorage.getItem('tasks') || '{}');
+
+    if (option === 'all') {
+      setTodoList(tasks)
+    }
+
+    if (option === 'uncompleted') {
+      const uncompletedList: Provider[] = []
+
+      tasks.forEach((element: Provider) => {
+        if (element.status === option) uncompletedList.push(element)
+      });
+
+      setTodoList(uncompletedList)
+    }
+
+    if (option === 'completed') {
+      const completedList: Provider[] = []
+
+      tasks.forEach((element: Provider) => {
+        if (element.status === option) completedList.push(element)
+      });
+
+      setTodoList(completedList)
+    }
+  }
+
+  const completeTask = (id: any) => {
+    todoList[id].status = 'completed'
+
+    setConfetti(true)
+
+    setTimeout(() => {
+      setConfetti(false)
+    }, 3000)
+
+    saveTasks(todoList)
+    getTasks('all')
+  }
+
+  const removeTask = (id: any) => {
+    todoList.splice(id, 1)
+
+    saveTasks(todoList)
+    getTasks('all')
+  }
+
+  const addTask = () => {
+    const tasks: object[] = []
+    const taskName = value
+
+    if (taskName != '') {
+
+      const task = {
+        task: taskName,
+        status: 'uncompleted'
+      }
+
+      for (let i = 0; i < todoList.length; i++) {
+        tasks.push(todoList[i])
+      }
+
+      tasks.push(task);
+
+      saveTasks(tasks)
+      getTasks('all')
+
+      setValue('')
+
+    } else {
+      setModalError(true)
+
+      setTimeout(() => {
+        setModalError(false)
+      }, 1250)
+    }
+  }
+
+  const saveTasks = (tasks: object[]) => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  useEffect(() => {
+    getTasks('all')
+  }, [])
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <>
+      {confetti ? (
+        <Confetti
+          width={width}
+          height={height}
+          recycle={false}
+          numberOfPieces={500}
+          tweenDuration={10000}
         />
-      </div>
+      ) : null}
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+      {modalError ? (<ErrorModal />) : null}
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+      <article className="flex justify-center">
+        <section className="flex flex-col justify-center items-center gap-y-6 lg:gap-y-12 lg:max-w-fit">
+          <div className="flex flex-col lg:flex-row items-center gap-y-6 lg:gap-x-12 text-xl lg:text-2xl w-full">
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+            <input
+              type="text"
+              placeholder="Делаем что или ну его?"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              className="w-full lg:min-w-[500px] p-3 lg:p-6 border-2 border-gray-200 bg-neutral-100 rounded-xl shadow"
+            />
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+            <button
+              type="button"
+              onClick={addTask}
+              className="p-3 lg:p-6 w-full lg:w-fit font-bold border-2 border-gray-200 bg-gradient-to-r from-black to-purple-500 text-transparent bg-clip-text rounded-xl active:scale-[0.96] duration-200 ease-in shadow">
+              Добавить
+            </button>
+
+          </div>
+
+          <div className="flex justify-between items-center gap-x-6 lg:gap-x-12 w-full font-bold text-xl lg:text-2xl">
+
+            <button
+              type="button"
+              onClick={(e) => getTasks('all')}
+              className="p-3 lg:p-6 w-full border-2 border-gray-200 bg-gradient-to-r from-black to-rose-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
+            >
+              Все
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => getTasks('uncompleted')}
+              className="p-3 lg:p-6 w-full border-2 border-gray-200 bg-gradient-to-r from-black to-cyan-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
+            >
+              Активные
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => getTasks('completed')}
+              className="p-3 lg:p-6 w-full border-2 border-gray-200 bg-gradient-to-r from-black to-green-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
+            >
+              Выполненные
+            </button>
+
+          </div>
+          <section className="flex flex-col gap-y-3 w-full">
+
+            {todoList.length > 0
+              ? (todoList.map((el, index) => (
+                <Task key={index} id={index} task={el.task} status={el.status} complete={completeTask} remove={removeTask} />
+              )))
+              : (<div className="p-3 lg:p-6 w-full text-center font-bold text-xl lg:text-2xl border-2 border-gray-200 bg-gradient-to-r from-purple-500 via-rose-500 to-yellow-500 text-transparent bg-clip-text rounded-xl shadow">Пусто... Слишком пусто...</div>)}
+
+          </section>
+        </section>
+      </article>
+    </>
   );
 }
