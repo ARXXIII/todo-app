@@ -30,10 +30,12 @@ export default function Home() {
     const getTasks = () => {
         const data = JSON.parse(localStorage.getItem('tasks') || '{}');
 
-        setTodoList(data)
+        if (data) setTodoList(data)
     }
 
     const createTask = (id: number, value: string) => {
+
+        const data = todoList
 
         const task: Provider = {
             id: id,
@@ -42,7 +44,11 @@ export default function Home() {
             display: true,
         }
 
-        todoList.push(task)
+        data.push(task)
+
+        saveTasks(data)
+        getTasks()
+        filterTasks(lastFilterOption)
     }
 
     const handleOnClick = () => {
@@ -56,9 +62,6 @@ export default function Home() {
 
         if (value != '') {
             createTask(id, value)
-            saveTasks(todoList)
-            getTasks()
-            filterTasks(lastFilterOption)
 
             setValue('')
         } else {
@@ -76,7 +79,9 @@ export default function Home() {
 
     const completeTask = (id: number) => {
 
-        todoList.forEach((task) => {
+        const data = todoList
+
+        data.forEach((task) => {
 
             if (task.id === id) {
                 task.status = 'completed'
@@ -89,28 +94,32 @@ export default function Home() {
             }
         })
 
-        saveTasks(todoList)
+        saveTasks(data)
         getTasks()
     }
 
     const removeTask = (id: number) => {
 
-        todoList.forEach((task) => {
+        const data = todoList
+
+        data.forEach((task) => {
 
             if (task.id === id) {
-                todoList.splice(todoList.indexOf(task), 1)
+                data.splice(data.indexOf(task), 1)
             }
         })
 
-        saveTasks(todoList)
+        saveTasks(data)
         getTasks()
     }
 
     const filterTasks = (option: 'all' | 'uncompleted' | 'completed') => {
 
+        const data = todoList
+
         if (option === 'all') {
 
-            todoList.forEach((task) => {
+            data.forEach((task) => {
                 task.display = true
             })
 
@@ -119,7 +128,7 @@ export default function Home() {
 
         if (option === 'uncompleted') {
 
-            todoList.forEach((task) => {
+            data.forEach((task) => {
                 task.display = true
 
                 if (task.status !== option) {
@@ -134,7 +143,7 @@ export default function Home() {
 
             let i = 0
 
-            todoList.forEach((task) => {
+            data.forEach((task) => {
                 task.display = true
 
                 if (task.status !== option) {
@@ -148,7 +157,7 @@ export default function Home() {
 
         setFilterOption(option)
 
-        saveTasks(todoList)
+        saveTasks(data)
         getTasks()
     }
 
