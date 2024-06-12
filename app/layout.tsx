@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body className={`${nunito.className} flex flex-col justify-between p-3 lg:px-24 lg:py-12 min-h-screen bg-neutral-100`}>
+      <body className={`${nunito.className} flex flex-col justify-between px-3 py-6 lg:px-24 lg:py-12 min-h-screen bg-neutral-100`}>
         <Header />
         <main className="my-12 tracking-wide">
           {children}
