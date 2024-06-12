@@ -18,8 +18,8 @@ export default function Home() {
 
     const [value, setValue] = useState<string>('')
     const [confetti, setConfetti] = useState<boolean>(false)
-    const [modalError, setModalError] = useState<boolean>(false)
     const [todoList, setTodoList] = useState<Array<Provider>>([])
+    const [errorMessage, setErrorMessage] = useState<string>('')
     const [message, setMessage] = useState<string>('Так пусто, что эхо слышно')
     const [lastFilterOption, setFilterOption] = useState<'all' | 'uncompleted' | 'completed'>('all')
 
@@ -28,9 +28,9 @@ export default function Home() {
     }
 
     const getTasks = () => {
-        const data = JSON.parse(localStorage.getItem('tasks') || '{}');
+        const data = JSON.parse(localStorage.getItem('tasks') || '[]');
 
-        if (data) setTodoList(data)
+        setTodoList(data)
     }
 
     const createTask = (id: number, value: string) => {
@@ -46,15 +46,15 @@ export default function Home() {
 
         try {
             data.push(task)
+
             saveTasks(data)
             getTasks()
             filterTasks(lastFilterOption)
-
         } catch (error) {
-            console.log(error)
+            setTimeout(() => {
+                setErrorMessage('')
+            }, 1300, setErrorMessage('Что пошло не так'));
         }
-
-
     }
 
     const handleOnClick = () => {
@@ -72,8 +72,8 @@ export default function Home() {
             setValue('')
         } else {
             setTimeout(() => {
-                setModalError(false)
-            }, 1300, setModalError(true));
+                setErrorMessage('')
+            }, 1300, setErrorMessage('Задачу надо назвать'));
         }
     }
 
@@ -87,36 +87,50 @@ export default function Home() {
 
         const data = todoList
 
-        data.forEach((task) => {
+        try {
+            data.forEach((task) => {
 
-            if (task.id === id) {
-                task.status = 'completed'
+                if (task.id === id) {
+                    task.status = 'completed'
 
-                filterTasks(lastFilterOption)
+                    filterTasks(lastFilterOption)
 
-                setTimeout(() => {
-                    setConfetti(false)
-                }, 3000, setConfetti(true));
-            }
-        })
+                    setTimeout(() => {
+                        setConfetti(false)
+                    }, 3000, setConfetti(true));
+                }
+            })
 
-        saveTasks(data)
-        getTasks()
+            saveTasks(data)
+            getTasks()
+
+        } catch (error) {
+            setTimeout(() => {
+                setErrorMessage('')
+            }, 1300, setErrorMessage('Что пошло не так'));
+        }
     }
 
     const removeTask = (id: number) => {
 
         const data = todoList
 
-        data.forEach((task) => {
+        try {
+            data.forEach((task) => {
 
-            if (task.id === id) {
-                data.splice(data.indexOf(task), 1)
-            }
-        })
+                if (task.id === id) {
+                    data.splice(data.indexOf(task), 1)
+                }
+            })
 
-        saveTasks(data)
-        getTasks()
+            saveTasks(data)
+            getTasks()
+
+        } catch (error) {
+            setTimeout(() => {
+                setErrorMessage('')
+            }, 1300, setErrorMessage('Что пошло не так'));
+        }
     }
 
     const filterTasks = (option: 'all' | 'uncompleted' | 'completed') => {
@@ -125,40 +139,61 @@ export default function Home() {
 
         if (option === 'all') {
 
-            data.forEach((task) => {
-                task.display = true
-            })
+            try {
+                data.forEach((task) => {
+                    task.display = true
+                })
 
-            setMessage('Так пусто, что эхо слышно')
+                setMessage('Так пусто, что эхо слышно')
+            } catch (error) {
+
+                setTimeout(() => {
+                    setErrorMessage('')
+                }, 1300, setErrorMessage('Что пошло не так'));
+            }
         }
 
         if (option === 'uncompleted') {
 
-            data.forEach((task) => {
-                task.display = true
+            try {
+                data.forEach((task) => {
+                    task.display = true
 
-                if (task.status !== option) {
-                    task.display = false
-                }
-            })
+                    if (task.status !== option) {
+                        task.display = false
+                    }
+                })
 
-            setMessage('Бездельничаем получается')
+                setMessage('Бездельничаем получается')
+            } catch (error) {
+
+                setTimeout(() => {
+                    setErrorMessage('')
+                }, 1300, setErrorMessage('Что пошло не так'));
+            }
         }
 
         if (option === 'completed') {
 
             let i = 0
 
-            data.forEach((task) => {
-                task.display = true
+            try {
+                data.forEach((task) => {
+                    task.display = true
 
-                if (task.status !== option) {
-                    task.display = false
-                    i++
-                }
-            })
+                    if (task.status !== option) {
+                        task.display = false
+                        i++
+                    }
+                })
 
-            setMessage('Почему ничего не выполнено, а?')
+                setMessage('Почему ничего не выполнено, а?')
+            } catch (error) {
+
+                setTimeout(() => {
+                    setErrorMessage('')
+                }, 1300, setErrorMessage('Что пошло не так'));
+            }
         }
 
         setFilterOption(option)
@@ -183,7 +218,7 @@ export default function Home() {
                 />
             ) : null}
 
-            {modalError ? (<ErrorModal />) : null}
+            {errorMessage ? (<ErrorModal title={errorMessage} />) : null}
 
             <article className="flex justify-center">
                 <section className="flex flex-col justify-center items-center gap-y-6 lg:gap-y-12 w-full lg:max-w-fit">
