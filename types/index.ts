@@ -8,3 +8,8 @@ export interface TaskProps {
 	remove: (id: number) => void;
 	display: boolean;
 }
+
+export interface ErrorModalProps {
+	title: string;
+	subtitle?: string;
+}
