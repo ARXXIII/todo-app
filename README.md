@@ -22,4 +22,4 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ### Live Demo
 
-[Click](todo-app-alpha-bice-56.vercel.app)
+[Click](https://todo-app-alpha-bice-56.vercel.app)
