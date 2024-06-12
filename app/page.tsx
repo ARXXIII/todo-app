@@ -44,11 +44,17 @@ export default function Home() {
             display: true,
         }
 
-        data.push(task)
+        try {
+            data.push(task)
+            saveTasks(data)
+            getTasks()
+            filterTasks(lastFilterOption)
 
-        saveTasks(data)
-        getTasks()
-        filterTasks(lastFilterOption)
+        } catch (error) {
+            console.log(error)
+        }
+
+
     }
 
     const handleOnClick = () => {
