@@ -12,6 +12,8 @@
 
 <img src='todoAppMobile.png' alt='Mobile' width='1000'>
 
+<img src='todoAppErrorMobile.png' alt='Mobile' width='1000'>
+
 ## How to use
 
 - Clone repository and `cd` into it
