@@ -16,7 +16,14 @@ export const Footer = () => {
                 </div>
             </section>
             <div className="hidden lg:flex justify-center items-center mt-6 text-center">
-                <a href="https://github.com/PICKLEGENT" target="_blanc" className="text-sm text-neutral-500">Code by<br />Andrew Romanov</a>
+                <a
+                    href="https://github.com/PICKLEGENT"
+                    title='Главный по раскрашиванию кнопочек'
+                    target="_blanc"
+                    className="text-sm text-neutral-500 leading-relaxed"
+                >
+                    Code by<br />Andrew Romanov
+                </a>
             </div>
         </footer>
     )
