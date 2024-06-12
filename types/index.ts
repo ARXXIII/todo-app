@@ -6,4 +6,5 @@ export interface TaskProps {
 	status: 'uncompleted' | 'completed';
 	complete: (id: number) => void;
 	remove: (id: number) => void;
+	display: boolean;
 }

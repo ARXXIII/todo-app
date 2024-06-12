@@ -7,178 +7,243 @@ import { useEffect, useState } from "react";
 import { ErrorModal } from "@/components/modals/error";
 
 interface Provider {
-  task: string,
-  status: "uncompleted" | "completed",
+    id: number,
+    name: string,
+    status: 'uncompleted' | 'completed',
+    display: boolean,
 }
 
 export default function Home() {
-  const { width, height } = useWindowSize()
+    const { width, height } = useWindowSize()
 
-  const [value, setValue] = useState('')
-  const [todoList, setTodoList] = useState<Array<Provider>>([])
-  const [confetti, setConfetti] = useState(false)
-  const [modalError, setModalError] = useState(false)
+    const [value, setValue] = useState<string>('')
+    const [confetti, setConfetti] = useState<boolean>(false)
+    const [modalError, setModalError] = useState<boolean>(false)
+    const [todoList, setTodoList] = useState<Array<Provider>>([])
+    const [message, setMessage] = useState<string>('Так пусто, что эхо слышно')
+    const [lastFilterOption, setFilterOption] = useState<'all' | 'uncompleted' | 'completed'>('all')
 
-  const getTasks = (option: 'all' | 'uncompleted' | 'completed') => {
-    const tasks = JSON.parse(localStorage.getItem('tasks') || '{}');
-
-    if (option === 'all') {
-      setTodoList(tasks)
+    const saveTasks = (tasks: object[]) => {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
-    if (option === 'uncompleted') {
-      const uncompletedList: Provider[] = []
+    const getTasks = () => {
+        const data = JSON.parse(localStorage.getItem('tasks') || '{}');
 
-      tasks.forEach((element: Provider) => {
-        if (element.status === option) uncompletedList.push(element)
-      });
-
-      setTodoList(uncompletedList)
+        setTodoList(data)
     }
 
-    if (option === 'completed') {
-      const completedList: Provider[] = []
+    const createTask = (id: number, value: string) => {
 
-      tasks.forEach((element: Provider) => {
-        if (element.status === option) completedList.push(element)
-      });
+        const task: Provider = {
+            id: id,
+            name: value,
+            status: 'uncompleted',
+            display: true,
+        }
 
-      setTodoList(completedList)
+        todoList.push(task)
     }
-  }
 
-  const completeTask = (id: any) => {
-    todoList[id].status = 'completed'
+    const handleOnClick = () => {
+        let id
 
-    setConfetti(true)
+        if (todoList.length > 0) {
+            id = todoList[todoList.length - 1].id + 1
+        } else {
+            id = 1
+        }
 
-    setTimeout(() => {
-      setConfetti(false)
-    }, 3000)
+        if (value != '') {
+            createTask(id, value)
+            saveTasks(todoList)
+            getTasks()
+            filterTasks(lastFilterOption)
 
-    saveTasks(todoList)
-    getTasks('all')
-  }
-
-  const removeTask = (id: any) => {
-    todoList.splice(id, 1)
-
-    saveTasks(todoList)
-    getTasks('all')
-  }
-
-  const addTask = () => {
-    const tasks: object[] = []
-    const taskName = value
-
-    if (taskName != '') {
-
-      const task = {
-        task: taskName,
-        status: 'uncompleted'
-      }
-
-      for (let i = 0; i < todoList.length; i++) {
-        tasks.push(todoList[i])
-      }
-
-      tasks.push(task);
-
-      saveTasks(tasks)
-      getTasks('all')
-
-      setValue('')
-
-    } else {
-      setModalError(true)
-
-      setTimeout(() => {
-        setModalError(false)
-      }, 1250)
+            setValue('')
+        } else {
+            setTimeout(() => {
+                setModalError(false)
+            }, 1300, setModalError(true));
+        }
     }
-  }
 
-  const saveTasks = (tasks: object[]) => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }
+    const onEnter = (e: { key: string; }) => {
+        if (e.key === 'Enter') {
+            handleOnClick()
+        }
+    }
 
-  useEffect(() => {
-    getTasks('all')
-  }, [])
+    const completeTask = (id: number) => {
 
-  return (
-    <>
-      {confetti ? (
-        <Confetti
-          width={width}
-          height={height}
-          recycle={false}
-          numberOfPieces={500}
-          tweenDuration={10000}
-        />
-      ) : null}
+        todoList.forEach((task) => {
 
-      {modalError ? (<ErrorModal />) : null}
+            if (task.id === id) {
+                task.status = 'completed'
 
-      <article className="flex justify-center">
-        <section className="flex flex-col justify-center items-center gap-y-6 lg:gap-y-12 lg:max-w-fit">
-          <div className="flex flex-col lg:flex-row items-center gap-y-6 lg:gap-x-12 text-xl lg:text-2xl w-full">
+                filterTasks(lastFilterOption)
 
-            <input
-              type="text"
-              placeholder="Делаем что или ну его?"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className="w-full lg:min-w-[500px] p-3 lg:p-6 border-2 border-gray-200 bg-neutral-100 rounded-xl shadow"
-            />
+                setTimeout(() => {
+                    setConfetti(false)
+                }, 3000, setConfetti(true));
+            }
+        })
 
-            <button
-              type="button"
-              onClick={addTask}
-              className="p-3 lg:p-6 w-full lg:w-fit font-bold border-2 border-gray-200 bg-gradient-to-r from-black to-purple-500 text-transparent bg-clip-text rounded-xl active:scale-[0.96] duration-200 ease-in shadow">
-              Добавить
-            </button>
+        saveTasks(todoList)
+        getTasks()
+    }
 
-          </div>
+    const removeTask = (id: number) => {
 
-          <div className="flex justify-between items-center gap-x-6 lg:gap-x-12 w-full font-bold text-xl lg:text-2xl">
+        todoList.forEach((task) => {
 
-            <button
-              type="button"
-              onClick={(e) => getTasks('all')}
-              className="p-3 lg:p-6 w-full border-2 border-gray-200 bg-gradient-to-r from-black to-rose-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
-            >
-              Все
-            </button>
+            if (task.id === id) {
+                todoList.splice(todoList.indexOf(task), 1)
+            }
+        })
 
-            <button
-              type="button"
-              onClick={(e) => getTasks('uncompleted')}
-              className="p-3 lg:p-6 w-full border-2 border-gray-200 bg-gradient-to-r from-black to-cyan-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
-            >
-              Активные
-            </button>
+        saveTasks(todoList)
+        getTasks()
+    }
 
-            <button
-              type="button"
-              onClick={(e) => getTasks('completed')}
-              className="p-3 lg:p-6 w-full border-2 border-gray-200 bg-gradient-to-r from-black to-green-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
-            >
-              Выполненные
-            </button>
+    const filterTasks = (option: 'all' | 'uncompleted' | 'completed') => {
 
-          </div>
-          <section className="flex flex-col gap-y-3 w-full">
+        if (option === 'all') {
 
-            {todoList.length > 0
-              ? (todoList.map((el, index) => (
-                <Task key={index} id={index} task={el.task} status={el.status} complete={completeTask} remove={removeTask} />
-              )))
-              : (<div className="p-3 lg:p-6 w-full text-center font-bold text-xl lg:text-2xl border-2 border-gray-200 bg-gradient-to-r from-purple-500 via-rose-500 to-yellow-500 text-transparent bg-clip-text rounded-xl shadow">Пусто... Слишком пусто...</div>)}
+            todoList.forEach((task) => {
+                task.display = true
+            })
 
-          </section>
-        </section>
-      </article>
-    </>
-  );
+            setMessage('Так пусто, что эхо слышно')
+        }
+
+        if (option === 'uncompleted') {
+
+            todoList.forEach((task) => {
+                task.display = true
+
+                if (task.status !== option) {
+                    task.display = false
+                }
+            })
+
+            setMessage('Бездельничаем получается')
+        }
+
+        if (option === 'completed') {
+
+            let i = 0
+
+            todoList.forEach((task) => {
+                task.display = true
+
+                if (task.status !== option) {
+                    task.display = false
+                    i++
+                }
+            })
+
+            setMessage('Почему ничего не выполнено, а?')
+        }
+
+        setFilterOption(option)
+
+        saveTasks(todoList)
+        getTasks()
+    }
+
+    useEffect(() => {
+        getTasks()
+    }, [])
+
+    return (
+        <>
+            {confetti ? (
+                <Confetti
+                    width={width}
+                    height={height}
+                    recycle={false}
+                    numberOfPieces={500}
+                    tweenDuration={10000}
+                />
+            ) : null}
+
+            {modalError ? (<ErrorModal />) : null}
+
+            <article className="flex justify-center">
+                <section className="flex flex-col justify-center items-center gap-y-6 lg:gap-y-12 w-full lg:max-w-fit">
+                    <div className="flex flex-col lg:flex-row items-center gap-y-3 lg:gap-x-6 text-xl lg:text-2xl w-full">
+
+                        <input
+                            type="text"
+                            placeholder="Делаем что или отдыхаем?"
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
+                            onKeyDown={(e) => onEnter(e)}
+                            className="w-full lg:min-w-[500px] p-3 lg:p-6 border-2 border-gray-200 bg-neutral-100 rounded-xl shadow"
+                        />
+
+                        <button
+                            type="button"
+                            onClick={handleOnClick}
+                            className="p-3 lg:p-6 w-full lg:w-fit font-bold border-2 border-gray-200 bg-gradient-to-r from-black to-purple-500 text-transparent bg-clip-text rounded-xl active:scale-[0.96] duration-200 ease-in shadow">
+                            Добавить
+                        </button>
+
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 lg:gap-x-6 w-full font-bold text-xl lg:text-2xl">
+
+                        <button
+                            type="button"
+                            onClick={(e) => filterTasks('all')}
+                            className="p-3 lg:p-6 border-2 border-gray-200 bg-gradient-to-r from-black to-rose-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
+                        >
+                            Все
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={(e) => filterTasks('uncompleted')}
+                            className="p-3 lg:p-6 border-2 border-gray-200 bg-gradient-to-r from-black to-cyan-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
+                        >
+                            Активные
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={(e) => filterTasks('completed')}
+                            className="p-3 lg:p-6 border-2 border-gray-200 bg-gradient-to-r from-black to-green-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
+                        >
+                            Выполненные
+                        </button>
+
+                    </div>
+
+                    {todoList.length > 0
+                        ? (<section className="grid grid-cols-1 lg:grid-cols-2 gap-y-3 lg:gap-6 w-full">
+
+                            {todoList.map((task, index) => (
+                                <Task
+                                    key={index}
+                                    id={task.id}
+                                    task={task.name}
+                                    status={task.status}
+                                    complete={completeTask}
+                                    remove={removeTask}
+                                    display={task.display}
+                                />
+                            ))}
+
+                        </section>)
+                        : (<div
+                            className="p-3 lg:p-6 w-full text-center font-bold text-xl lg:text-2xl border-2 border-gray-200 bg-gradient-to-r from-purple-500 via-rose-500 to-yellow-500 text-transparent bg-clip-text rounded-xl shadow"
+                        >
+                            {message}
+                        </div>)
+                    }
+                </section>
+            </article >
+        </>
+    );
 }
