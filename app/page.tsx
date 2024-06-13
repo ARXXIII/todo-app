@@ -20,7 +20,7 @@ export default function Home() {
     const [confetti, setConfetti] = useState<boolean>(false)
     const [todoList, setTodoList] = useState<Array<Provider>>([])
     const [errorMessage, setErrorMessage] = useState<string>('')
-    const [message, setMessage] = useState<string>('Так пусто, что эхо слышно')
+    const [message, setMessage] = useState<string>('So emptyyy... ptyyy... yyy...')
     const [lastFilterOption, setFilterOption] = useState<'all' | 'uncompleted' | 'completed'>('all')
 
     const saveTasks = (tasks: object[]) => {
@@ -53,7 +53,7 @@ export default function Home() {
         } catch (error) {
             setTimeout(() => {
                 setErrorMessage('')
-            }, 1300, setErrorMessage('Что пошло не так'));
+            }, 1300, setErrorMessage('Something went wrong'));
         }
     }
 
@@ -73,7 +73,7 @@ export default function Home() {
         } else {
             setTimeout(() => {
                 setErrorMessage('')
-            }, 1300, setErrorMessage('Задачу надо назвать'));
+            }, 1300, setErrorMessage('The task wants a name!'));
         }
     }
 
@@ -107,7 +107,7 @@ export default function Home() {
         } catch (error) {
             setTimeout(() => {
                 setErrorMessage('')
-            }, 1300, setErrorMessage('Что пошло не так'));
+            }, 1300, setErrorMessage('Something went wrong'));
         }
     }
 
@@ -129,7 +129,7 @@ export default function Home() {
         } catch (error) {
             setTimeout(() => {
                 setErrorMessage('')
-            }, 1300, setErrorMessage('Что пошло не так'));
+            }, 1300, setErrorMessage('Something went wrong'));
         }
     }
 
@@ -144,12 +144,12 @@ export default function Home() {
                     task.display = true
                 })
 
-                setMessage('Так пусто, что эхо слышно')
+                setMessage('So emptyyy... ptyyy... yyy...')
             } catch (error) {
 
                 setTimeout(() => {
                     setErrorMessage('')
-                }, 1300, setErrorMessage('Что пошло не так'));
+                }, 1300, setErrorMessage('Something went wrong'));
             }
         }
 
@@ -164,12 +164,12 @@ export default function Home() {
                     }
                 })
 
-                setMessage('Бездельничаем получается')
+                setMessage(`It turns out we're messing around`)
             } catch (error) {
 
                 setTimeout(() => {
                     setErrorMessage('')
-                }, 1300, setErrorMessage('Что пошло не так'));
+                }, 1300, setErrorMessage('Something went wrong'));
             }
         }
 
@@ -187,12 +187,12 @@ export default function Home() {
                     }
                 })
 
-                setMessage('Почему ничего не выполнено, а?')
+                setMessage(`Why hasn't anything been done, huh?`)
             } catch (error) {
 
                 setTimeout(() => {
                     setErrorMessage('')
-                }, 1300, setErrorMessage('Что пошло не так'));
+                }, 1300, setErrorMessage('Something went wrong'));
             }
         }
 
@@ -226,7 +226,7 @@ export default function Home() {
 
                         <input
                             type="text"
-                            placeholder="Делаем что или отдыхаем?"
+                            placeholder="Do we do something or chill?"
                             value={value}
                             onChange={(e) => setValue(e.target.value)}
                             onKeyDown={(e) => onEnter(e)}
@@ -236,8 +236,9 @@ export default function Home() {
                         <button
                             type="button"
                             onClick={handleOnClick}
-                            className="p-3 lg:p-6 w-full lg:w-fit font-bold border-2 border-gray-200 bg-gradient-to-r from-black to-purple-500 text-transparent bg-clip-text rounded-xl active:scale-[0.96] duration-200 ease-in shadow">
-                            Добавить
+                            className="p-3 lg:p-6 w-full lg:w-fit font-bold border-2 border-gray-200 bg-gradient-to-r from-black to-purple-500 text-transparent bg-clip-text rounded-xl active:scale-[0.96] duration-200 ease-in shadow"
+                        >
+                            Add
                         </button>
 
                     </div>
@@ -249,7 +250,7 @@ export default function Home() {
                             onClick={(e) => filterTasks('all')}
                             className="p-3 lg:p-6 border-2 border-gray-200 bg-gradient-to-r from-black to-rose-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
                         >
-                            Все
+                            All
                         </button>
 
                         <button
@@ -257,7 +258,7 @@ export default function Home() {
                             onClick={(e) => filterTasks('uncompleted')}
                             className="p-3 lg:p-6 border-2 border-gray-200 bg-gradient-to-r from-black to-cyan-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
                         >
-                            Активные
+                            Active
                         </button>
 
                         <button
@@ -265,7 +266,7 @@ export default function Home() {
                             onClick={(e) => filterTasks('completed')}
                             className="p-3 lg:p-6 border-2 border-gray-200 bg-gradient-to-r from-black to-green-500 text-transparent bg-clip-text rounded-xl cursor-pointer active:scale-[0.96] duration-200 ease-in shadow"
                         >
-                            Выполненные
+                            Completed
                         </button>
 
                     </div>
