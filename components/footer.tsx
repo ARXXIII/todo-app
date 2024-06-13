@@ -11,7 +11,6 @@ export const Footer = () => {
                     <div className="flex gap-x-3 text-xl">
                         <a href="https://github.com/PICKLEGENT" target="_blanc">GitHub</a>
                         <a href="https://t.me/AndrewRom" target="_blanc">Telegram</a>
-                        <a href="https://hh.ru/resume/4b71ce6fff0d4401220039ed1f677361696d45" target="_blanc">hh</a>
                     </div>
                 </div>
             </section>
