@@ -8,11 +8,7 @@ TODO app for scheduling tasks
 
 <img src='todoAppWithTasks.png' alt='With Tasks' width='1000'>
 
-<img src='todoAppError.png' alt='Error message' width='1000'>
-
-<img src='todoAppMobile.png' alt='Mobile' width='1000'>
-
-<img src='todoAppErrorMobile.png' alt='Mobile' width='1000'>
+<img src='todoAppErrorMessage.png' alt='Error message' width='1000'>
 
 ## How to use
 
