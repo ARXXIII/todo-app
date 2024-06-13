@@ -1,6 +1,6 @@
 # TODO App - Next.js 14 + TypeScript + Tailwind CSS + shadcn/ui
 
-Тестовое задание Frontend junior в Mindbox
+TODO app for scheduling tasks
 
 ### Screenshots
 
@@ -24,4 +24,4 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ### Live Demo
 
-[Click](https://todo-app-alpha-bice-56.vercel.app)
+[Click](https://ar23-todo-app.vercel.app)
